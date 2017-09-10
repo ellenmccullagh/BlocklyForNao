@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Blockly For NAO</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <!--<link rel="icon" href="/favicon.ico" type="image/x-icon">-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="blockly/blockly_compressed.js"></script>
+        <script src="blockly/python_compressed.js"></script>
+        <script src="blockly/blocks_compressed.js"></script>
+        <script src="blockly/msg/js/en.js"></script>
+        <script src="blocks.js"></script>
+        <script src="code.js"></script>
+        <script src="FileSaver.min.js"></script>
+
+
+        <style>
+            html, body {
+                background-color: #03A9F4;
+                height: 100%;
+                margin: 0;
+            }
+        body {
+            background-color: #03A9F4;
+            font-family: sans-serif;
+            /*overflow: hidden;*/
+            position: relative;
+        }
+        #section1 {padding-top:50px;height:100%;color: #fff; background-color: #1E88E5;}
+        #section2 {padding-top:50px;height:100%;color: #fff; background-color: #673ab7;}
+        #section3 {padding-top:50px;height:100%;color: #fff; background-color: #fB8C00;}
+        #section41 {padding-top:50px;height:100%;color: #fff; background-color: #00bcd4;}
+        #section42 {padding-top:50px;height:100%;color: #fff; background-color: #009688;}
+        #section5 {padding-top:50px;height:100%;color: #fff; background-color: #F44336;}
+        .jumbotron h1 {
+            text-align: center;
+            color: #FF3D00;
+            font-family: "Arial Black";
+            font-weight: bold;
+            font-size: 600%;
+            line-height: 10%;
+        }
+        table {
+            height: 100%;
+            width: 100%;
+        }
+        #blocklyDiv {
+            height: 500px;
+            text-align: center;
+        }
+        .goButton{
+            background-color: #FF6F00;
+            font-family: "Arial";
+            font-weight: bold;
+            color: #FFECB3
+        }
+        .cells{
+            background-color: #FFFF00;
+        }
+        .jumbotron{
+            background-color: #FFFF00;
+            height: 20%;
+        }
+        .scrollable{
+          height: 100%;
+          overflow:auto;
+        }
+        .well{
+          background: #F50057;
+          color: white;
+          font-weight: bold;
+          font-family: "Arial";
+        }
+        btn-file {
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-file input[type=file] {
+          position: absolute;
+          top: 0;
+          right: 0;
+          min-width: 100%;
+          min-height: 100%;
+          font-size: 100px;
+          text-align: right;
+          filter: alpha(opacity=0);
+          opacity: 0;
+          outline: none;
+          background: white;
+          cursor: inherit;
+          display: block;
+        }
+        h1{
+          text-align: center;
+          font-size: 100px;
+          color: lightgrey;
+          font-weight: bold;
+        }
+        #file-input{
+          display: none;
+        }
+        #codeArea{
+		white-space: pre-line;
+		}
+		
+        </style>
+
+    </head>
+
+    <body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">NAO BLOCKLY</a>
+        </div>
+        <div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li><a href="#section1">Blockly</a></li>
+              <li><a href="#section2">Python</a></li>
+              <li><a href="#section3">Documentation</a></li>
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Project Ideas<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#section41">Champions 1</a></li>
+                  <li><a href="#section42">Champions 2</a></li>
+                </ul>
+              </li>
+              <li><a href="#section5">Comments</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div id="section1" class="container-fluid">
+        <div class="jumbotron">
+            <h1>Nao Blockly</h1>
+        </div>
+        <div class="row-height">
+            <div class="col-sm-2 well well-lg" height="100%">
+                <h2>Settings</h2>
+                <p>Robot IP Address: </p> <input id="IP_Address" class="form-control"></input>
+                <!-- <p>Volume:</p><input id="Volume" class="form-control"></input> -->
+                <br>
+                <button class="btn-lg" onclick="downloadPython()">Download Python</button>
+
+                <button class = "btn-lg" onclick="saveBlocks()">Save Blockly xml</button>
+                 <!-- <span class="btn btn-default btn-file">
+                  Browse Files <input type="file" onchange='readSingleFile(this)'>
+                </span> -->
+
+                <label for="file-input"><button id="filebutton" class="btn-lg">Load Blockly xml</button></label>
+                <input type="file" id="file-input" onchange='readSingleFile(this)'/>
+                <!--<button class = "btn-success" onclick="restoreBlocks()">Restore Blocks</button>-->
+
+                <p id="SaveAlert"></p>
+            </div>
+            <div  id="blocklyDiv" class="col-sm-9" ></div>
+
+
+        </div>
+    </div>
+    <div id="section2" class="container-fluid">
+      <h3>Your Code In Python</h3>
+      <div class="col-sm-10 col-md-offset-1" align="left">
+          <button class="btn-lg" onclick="myUpdateFunction()">Show Code Below</button>
+          <div id="codeArea" margin-top="100px">Your Code Will Appear Here</div>
+    </div>
+  </div>
+  <div id="section3" class = "container-fluid">
+    <h3>Documentation</h3>
+    <p>Nao Blockly is a tool that lets you create python code that interacts with your NAO using google's blockly.</p>
+    <p>In order to run the generated python on your computer, you must install <a href="https://www.python.org/download/releases/2.7/">python 2.7</a> and the <a href="http://doc.aldebaran.com/2-1/dev/python/install_guide.html">NAO python sdk</a> (available on the Aldebaran Community page once you have registered your robot).</p>
+    <p>Once you have something written, download the generated python script and run it!</p>
+    <p>You may store your blockly progress by clicking the "Save Blockly xml" button. You can load any blockly file by clicking the "Load Blockly xml" button.</p>
+    <p>Each block has a tooltip to help you figure out what it does. hover your mouse over the block to read the tooltip.</p>
+    <br>
+    <h4>Behavior and Vision Blocks</h4>
+    <p>The behavior blocks and the vision recognition box call files that are already on the robot. You might have to put them there.
+      The vision recognition block requires a visual database. You can create this on choregraphe (use v. 2.1.2, newer versions do not work) and put it on the robot. If it still doesn't work, SSH into the robot (using <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">putty</a>) and remove all files (rm *) from this directory: /home/nao/.local/share/naoqi/vision/visionrecognition/current. Then try again.
+      To load a behavior onto the robot, read <a href="http://doc.aldebaran.com/1-14/software/choregraphe/panels/behavior_manager_panel.html">this page</a> from the Choregraphe documentation. The "Install Current Behavior on The Robot" button is the one you want. The name that it saves under is the name you type into the behavior box.
+    </p>
+    <br>
+    <h4>Generated Code</h4>
+    <p>When you download the code, you may notice that there is a lot more there than you made in blockly. That is called a "header". Headers are the dirty work that make all your code possible. See if you can read it and understand what it is doing!</p>
+
+  </div>
+  <div id='section41' class='container-fluid'>
+    <h3>Project Ideas For Champions 1</h3>
+  </div>
+  <div id='section42' class='container-fluid'>
+    <h3>Project Ideas For Champions 2</h3>
+  </div>
+  <div id='section5' class='container-fluid'>
+    <h3>Your Comments Are Greatly Appreciated!</h3>
+    <p>Whether you had issues running the website, downloading the python, loading or saving your blockly work, running the python or you simply want to tell me that I am amazing, I want to hear it! Please comment below</p>
+    <iframe src="https://docs.google.com/forms/d/1_IMJxj6da9Tors4tooP7S0SRMTepVQVr7b89pIKXQH4/viewform?embedded=true" width="760" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+  </div>
+
+        <!-- body size -->
+
+
+        <!-- Tool Box -->
+        <xml id="toolbox" style="display: none">
+            <category name="Core">
+                <category name="Ifs and Loops">
+                    <block type="controls_if"></block>
+                    <block type="controls_repeat_ext"></block>
+                    <block type="controls_whileUntil"></block>
+                </category>
+                <category name="Logic">
+                    <block type="logic_compare"></block>
+                    <block type="logic_operation"></block>
+                    <block type="logic_boolean"></block>
+                </category>
+                <category name="Math">
+                    <block type="math_arithmetic"></block>
+                    <block type="math_random_int"></block>
+                </category>
+                <category name="Data">
+                    <block type="math_number"></block>
+                    <block type="text"></block>
+                    <block type="logic_boolean"></block>
+                    <block type="string"></block>
+                </category>
+                <category name="Variables">
+                    <block type="variables_get"></block>
+                    <block type="variables_set"></block>
+                    <block type="lists_create_with"></block>
+                    <block type="list_by_index"></block>
+                    <block type="lists_split"></block>
+                </category>
+            </category>
+            <category name="NAO">
+              <category name="Begin">
+                  <block type="begin"></block>
+              </category>
+                <category name="Talk">
+                    <block type="nao_says"></block>
+                </category>
+                <category name="Listen">
+                    <block type="speech_recognition"></block>
+                </category>
+                <category name="Feel">
+                    <block type="waitforsensor"></block>
+                    <block type="is_touched"></block>
+                </category>
+                <category name="See">
+                    <block type="recognize_image"></block>
+                </category>
+                <category name="Move">
+                    <block type="run_behavior"></block>
+                    <block type="stop_behavior"></block>
+                    <block type="robot_state"></block>
+                    <block type="wait_finished"></block>
+                </category>
+            </category>
+        </xml>
+
+        <script>
+            $("#filebutton").click(function(){
+              $("#file-input").click();
+            });
+
+            var blocklyArea = document.getElementById('blocklyArea');
+            var blocklyDiv = document.getElementById('blocklyDiv');
+            var workspace = Blockly.inject('blocklyDiv',
+										{toolbox: document.getElementById('toolbox'),
+										 grid:
+										  {spacing: 25,
+										   length: 3,
+										   colour: '#ccc',
+										   snap: true},
+										 zoom: {enabled: true},
+										 trashcan: true});
+										   
+                                           var onresize = function(e) {
+                                               // Compute the absolute coordinates and dimensions of blocklyArea.
+                                               var element = blocklyArea;
+                                               var x = 0;
+                                               var y = 0;
+                                               do {
+                                                   x += element.offsetLeft;
+                                                   y += element.offsetTop;
+                                                   element = element.offsetParent;
+                                               } while (element);
+                                               // Position blocklyDiv over blocklyArea.
+                                               blocklyDiv.style.left = x + 'px';
+                                               blocklyDiv.style.top = y + 'px';
+                                               blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+                                               blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+                                           };
+        window.addEventListener('resize', onresize, false);
+        onresize();
+
+        function myUpdateFunction() {
+            var code = Blockly.Python.workspaceToCode(workspace);
+            console.log( code );
+            console.log( document.getElementById('codeArea').innerHTML );
+            document.getElementById('codeArea').innerHTML = "<pre><code>" + code + "</code></pre>";
+        }
+        function ValidateIPaddress(ipaddress)
+        {
+          if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress))
+          {
+            return (true)
+          }
+          alert("You have entered an invalid IP address!")
+          return (false)
+        }
+
+        var reader = new FileReader();
+
+        function readSingleFile(that){
+          //console.log("File Loaded");
+          if(that.files && that.files[0]){
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var contents = e.target.result;
+              //console.log(contents);
+              restoreBlocks2(contents);
+            };
+          reader.readAsText(that.files[0]);
+        };
+      }
+
+        function restoreBlocks2(xmlText){
+          if (xmlText) {
+            Blockly.mainWorkspace.clear();
+            xmlDom = Blockly.Xml.textToDom(xmlText);
+            Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
+          };
+        }
+
+        function restoreBlocks(){
+          var xmlText = localStorage.getItem("blockly.xml");
+          //console.log(xmlText)
+          if (xmlText) {
+            Blockly.mainWorkspace.clear();
+            xmlDom = Blockly.Xml.textToDom(xmlText);
+            Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
+          }
+        }
+
+        function saveBlocks(){
+          var file_name = prompt("Please name your file", "Blockly_Script");
+
+          if (file_name != null) {
+            document.getElementById("SaveAlert").innerHTML =
+            "Your file,  " + file_name + ", was saved";
+          }
+          var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+          var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+          var blob = new Blob( [ xmlText ], {type: "text/plain;charset=utf-8"} );
+			saveAs( blob, file_name + ".xml" );
+          //localStorage.setItem("blockly.xml", xmlText);
+        }
+        function downloadPython() {
+          console.log("Downloading Python File")
+          var generated_code = Blockly.Python.workspaceToCode(workspace);
+          var ipAddress = document.getElementById('IP_Address').value;
+          if (!ValidateIPaddress(ipAddress)){
+            return
+          };
+          // var volume = document.getElementById('Volume').value;
+          var code = "#!/usr/bin/env python\n";
+          code += "\n";
+          code += "import time\n";
+          code += "import socket\n";
+          code += "\n";
+          code += "from naoqi import *\n";
+          code += "##from naoqi import ALProxy\n";
+          code += "##from naoqi import ALBroker\n";
+          code += "##from naoqi import ALModule\n";
+          code += "\n";
+          code += "from threading import Lock\n";
+          code += "\n";
+          code += "#setup ips\n";
+          code += "ROBOT_IP = '" + ipAddress + "'\n";
+          code += "PC_IP = str(socket.gethostbyname(socket.gethostname()))\n";
+          code += "PORT = 9559\n";
+          code += "\n";
+          code += "#vision module variables\n";
+          code += "vision_module_name = 'naoSee'\n";
+          code += "vision_mem_value = 'PictureDetected' #ALMemory variable\n";
+          code += "\n";
+          code += "class SpeechRecoModule( ALModule ): #speech recognition\n";
+          code += "\tdef __init__( self, IP, name ):\n";
+          code += "\t\t# Create broker to be used by ALModule\n";
+          code += "\t\tbroker = ALBroker('pythonBroker','0.0.0.0', 0, IP, 9559)\n";
+          code += "\t\n";
+          code += "\t\tALModule.__init__( self, name )\n";
+          code += "\t\t\n";
+          code += "\t\ttry:\n";
+          code += "\t\t\tself.asr = ALProxy( 'ALSpeechRecognition' )\n";
+          code += "\t\texcept Exception, e:\n";
+          code += "\t\t\tprint 'Could not create proxy to ALSpeechRecognition'\n";
+          code += "\t\t\tprint 'Error was: ', e\n";
+          code += "\t\t\tsys.exit(1)\n";
+          code += "\t\t\t\n";
+          code += "\t\tself.memory = ALProxy( 'ALMemory' )\n";
+          code += "\t\t\n";
+          code += "\t\tself.asr.pause( True )\n";
+          code += "\t\t\n";
+          code += "\t\t# Flag to see if the speech module has been prepared\n";
+          code += "\t\tself.prepared = False\n";
+          code += "\t\t\n";
+          code += "\tdef prepare( self, wordList ):\n";
+          code += "\t\t# Remove context from last run\n";
+          code += "\t\tself.asr.removeAllContext()\n";
+          code += "\t\n";
+          code += "\t\t# Originally onload\n";
+          code += "\t\tself.bIsRunning = False\n";
+          code += "\t\tself.mutex = Lock()\n";
+          code += "\t\tself.hasPushed = False\n";
+          code += "\t\tself.hasSubscribed = False\n";
+          code += "\t\tself.BIND_PYTHON( self.getName(), 'onWordRecognized' )\n";
+          code += "\t\tself.word_list = wordList\n";
+          code += "\t\tself.word =''\n";
+          code += "\t\t\n";
+          code += "\t\t# Originally onInput_onStart\n";
+          code += "\t\tself.mutex.acquire()\n";
+          code += "\t\t\n";
+          code += "\t\tif ( self.bIsRunning ):\n";
+          code += "\t\t\tself.mutex.release()\n";
+          code += "\t\t\treturn\n";
+          code += "\t\t\t\n";
+          code += "\t\tself.bIsRunning = True\n";
+          code += "\t\t\n";
+          code += "\t\ttry:\n";
+          code += "\t\t\tif self.asr:\n";
+          code += "\t\t\t\tself.asr.setVisualExpression( True )\n";
+          code += "\t\t\t\tself.asr.pushContexts()\n";
+          code += "\t\t\tself.hasPushed = True\n";
+          code += "\t\t\t\n";
+          code += "\t\t\tif self.asr:\n";
+          code += "\t\t\t\tself.asr.setVocabulary( self.word_list, True )\n";
+          code += "\t\t\t\tself.memory.subscribeToEvent('WordRecognized', self.getName(), 'onWordRecognized')\n";
+          code += "\t\t\t\tself.hasSubscribed = True\n";
+          code += "\t\t\t\t\n";
+          code += "\t\texcept RuntimeError, e:\n";
+          code += "\t\t\tself.mutex.release()\n";
+          code += "\t\t\tself.unload()\n";
+          code += "\t\t\traise e\n";
+          code += "\t\tself.mutex.release()\n";
+          code += "\t\t\n";
+          code += "\t\tself.prepared = True\n";
+          code += "\t\t\n";
+          code += "\t\tprint 'Speech Recognition Successfully Prepared'\n";
+          code += "\t\t\n";
+          code += "\tdef unload( self ):\n";
+          code += "\t\tself.mutex.acquire()\n";
+          code += "\t\ttry:\n";
+          code += "\t\t\tif (self.bIsRunning):\n";
+          code += "\t\t\t\tif (self.hasSubscribed):\n";
+          code += "\t\t\t\t\tself.memory.unsubscribeToEvent( 'WordRecognized', self.getName() )\n";
+          code += "\t\t\t\t\t\n";
+          code += "\t\t\t\tif (self.hasPushed and self.asr):\n";
+          code += "\t\t\t\t\tself.asr.popContexts()\n";
+          code += "\t\t\t\t\t\n";
+          code += "\t\texcept RuntimeError, e:\n";
+          code += "\t\t\tself.mutex.release()\n";
+          code += "\t\t\traise e\n";
+          code += "\t\t\t\t\t\t \n";
+          code += "\t\tself.bIsRunning = False;\n";
+          code += "\t\tself.mutex.release()\n";
+          code += "\t\t\n";
+          code += "\t\tprint 'Speech Recognition Successfully Unloaded'\n";
+          code += "\t\t\n";
+          code += "\tdef onWordRecognized( self, key, value, message ):\n";
+          code += "\t\tprint 'Word recognized'\n";
+          code += "\t\t\n";
+          code += "\t\tif( len( value ) > 1 and value[1] >= 0.5 ):\n";
+          code += "\t\t\tprint 'Recognized the word :', value[0]\n";
+          code += "\t\t\t \n";
+          code += "\t\t\tfor char in value[0]:\n";
+          code += "\t\t\t\tif not( char in [ '.', ',', '<', '>' ] ):\n";
+          code += "\t\t\t\t\tself.word += char\n";
+          code += "\t\t\t\t\t\n";
+          code += "\t\t\tself.word.strip()\n";
+          code += "\t\t\t\n";
+          code += "\t\telse:\n";
+          code += "\t\t\tprint 'Insufficient threshold'\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t \n";
+          code += "\tdef getWord( self ):\n";
+          code += "\t\tif not self.prepared:\n";
+          code += "\t\t\treturn 'Error: Cannot get word until SpeechRecoModule is prepared'\n";
+          code += "\t\n";
+          code += "\t\t# Unpause speech recognition to get a word\n";
+          code += "\t\tself.asr.pause( False )\n";
+          code += "\t\n";
+          code += "\t\twhile self.word == '':\n";
+          code += "\t\t\ttime.sleep( 0.25 )\n";
+          code += "\t\t\t\n";
+          code += "\t\treturnWord = self.word\n";
+          code += "\t\tself.word = ''\n";
+          code += "\t\t\n";
+          code += "\t\t# Pause speech recognition after getting word\n";
+          code += "\t\tself.asr.pause( True )\n";
+          code += "\t\t\n";
+          code += "\t\t# Get rid of spaces on word before returning\n";
+          code += "\t\treturn ''.join( returnWord.split() )\n";
+          code += "\n";
+          code += "\n";
+          code += "class VisionRecoModule(ALModule): #image recognition (image database must already be on robot)\n";
+          code += "\t'''python class myModule test auto documentation'''\n";
+          code += "\tdef __init__(self, name ):\n";
+          code += "\t\t\tALModule.__init__( self, name )\n";
+          code += "\t\t\tself.image = ''\n";
+          code += "\t\t\tself.count = 1\n";
+          code += "\t\n";
+          code += "\tdef pictureChanged(self, strVarName, value, strMessage):\n";
+          code += "\t\t'''callback when data change'''\n";
+          code += "\t\tresult = ''\n";
+          code += "\t\tfor char in value[1][0][0]:\n";
+          code += "\t\t\t\t\t\tif not(char in ['[', ']', ''', ''']):\n";
+          code += "\t\t\t\t\t\t\t\tresult += char\n";
+          code += "\t\tself.image = result\n";
+          code += "\t\tprint result\n";
+          code += "\t\tself.count = self.count - 1\n";
+          code += "\n";
+          code += "\n";
+          code += "# setting up proxies and proxy boker\n";
+          code += "broker = ALBroker('pythonBroker',PC_IP, 0, ROBOT_IP, PORT)\n";
+          code += "pythonSpeechModule = SpeechRecoModule( ROBOT_IP, 'pythonSpeechModule' )\n";
+          code += "naoSee = VisionRecoModule(vision_module_name)\n";
+          code += "naoTalk = ALProxy('ALTextToSpeech', ROBOT_IP, PORT)\n";
+          code += "sensor_module = ALProxy('ALTouch', ROBOT_IP, PORT)\n";
+          code += "behavior_manager = ALProxy('ALBehaviorManager', ROBOT_IP, PORT)\n";
+          code += "motionProxy = ALProxy('ALMotion', ROBOT_IP, PORT)\n";
+          code += "\n";
+          code += "\n";
+          code += "#defining functions to reduce commands to single line\n";
+          code += "def listenForWords(wordlist):\n";
+          code += "\t\t\t\tpythonSpeechModule.prepare( wordlist )\n";
+          code += "\n";
+          code += "\t\t\t\tresponse = pythonSpeechModule.getWord()\n";
+          code += "\t\t\t\treturn response\n";
+          code += "\t\t\t\tpythonSpeechModule.unload()\n";
+          code += "\n";
+          code += "def seeImage():\n";
+          code += "\n";
+          code += "\t\t# Create a proxy to ALMemory\n";
+          code += "\t\ttry:\n";
+          code += "\t\t\tmemoryProxy = ALProxy('ALMemory', ROBOT_IP, PORT)\n";
+          code += "\t\texcept RuntimeError,e:\n";
+          code += "\t\t\tprint 'Error when creating ALMemory proxy:'\n";
+          code += "\t\t\texit(1)\n";
+          code += "\n";
+          code += "\n";
+          code += "\t\t# Have the python module called back when picture recognition results change.\n";
+          code += "\t\ttry:\n";
+          code += "\t\t\tmemoryProxy.subscribeToEvent(vision_mem_value, vision_module_name, 'pictureChanged')\n";
+          code += "\t\texcept RuntimeError,e:\n";
+          code += "\t\t\tprint 'Error when subscribing to micro event'\n";
+          code += "\t\t\texit(1)\n";
+          code += "\t\t\t\n";
+          code += "\t\twhile naoSee.count > 0:\n";
+          code += "\t\t\ttime.sleep(1)\n";
+          code += "\t\t\t\n";
+          code += "\t\t# unsubscribe modules\n";
+          code += "\t\tmemoryProxy.unsubscribeToEvent(vision_mem_value, vision_module_name)\n";
+          code += "\t\t\n";
+          code += "\t\tprint 'end of vision_recognition python script'\n";
+          code += "\t\treturn naoSee.image\n";
+          code += "\n";
+          code += "def getSensorStatus(sensor_name):\n";
+          code += "\t\t\t\tstatus_list = sensor_module.getStatus()\n";
+          code += "\t\t\t\tcount = 0\n";
+          code += "\t\t\t\tfor elem in status_list:\n";
+          code += "\t\t\t\t\t\t\t\tif sensor_name in elem[0]:\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\tif elem[1]:\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tcount += 1\n";
+          code += "\t\t\t\tif count == 0:\n";
+          code += "\t\t\t\t\t\t\t\treturn False\n";
+          code += "\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\treturn True\n";
+          code += "\n";
+          code += "def waitForSensor(sensor_name):\n";
+          code += "\t\t\t\twhile not getSensorStatus(sensor_name):\n";
+          code += "\t\t\t\t\t\t\t\ttime.sleep(0.5)\n";
+          code += "\n";
+          code += "def getBehaviors():\n";
+          code += "\t\t\t\tnames = behavior_manager.getInstalledBehaviors()\n";
+          code += "\t\t\t\tprint 'Behaviors on the robot:'\n";
+          code += "\t\t\t\tprint names\n";
+          code += "\n";
+          code += "\t\t\t\tnames = behavior_manager.getRunningBehaviors()\n";
+          code += "\t\t\t\tprint 'Running behaviors:'\n";
+          code += "\t\t\t\tprint names\n";
+          code += "\n";
+          code += "def launchBehavior(behavior_name, blocking):\n";
+          code += "\t\t\t\tif behavior_manager.isBehaviorInstalled(behavior_name):\n";
+          code += "\t\t\t\t\t\t\t\tif behavior_manager.isBehaviorRunning(behavior_name):\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\tprint 'The behavior is already running'\n";
+          code += "\t\t\t\t\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\tif blocking:\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tbehavior_manager.runBehavior(behavior_name)\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\ttime.sleep(0.5)\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tbehavior_manager.post.runBehavior(behavior_name)\n";
+          code += "\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\tprint 'Behavior not found'\n";
+          code += "\n";
+          code += "def stopBehavior(behavior_name):\n";
+          code += "\t\t\t\tif behavior_manager.isBehaviorRunning(behavior_name):\n";
+          code += "\t\t\t\t\t\t\t\tbehavior_manager.stopBehavior(behavior_name)\n";
+          code += "\t\t\t\t\t\t\t\ttime.sleep(1)\n";
+          code += "\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\tprint 'Behavior is already stopped'\n";
+          code += "\n";
+          code += "def setStiffness(state):\n";
+          code += "\t\t\t\tif state == 'on':\n";
+          code += "\t\t\t\t\t\t\t\tmotionProxy.stiffnessInterpolation('Body', 1.0, 1.0)\n";
+          code += "\t\t\t\telif state == 'off':\n";
+          code += "\t\t\t\t\t\t\t\tmotionProxy.rest()\n";
+          code += "\t\t\t\telse:\n";
+          code += "\t\t\t\t\t\t\t\tprint 'Command not recognized'\n";
+          code += "\n";
+
+          code += generated_code
+
+          code += "\n";
+
+          var blob = new Blob( [ code ], {type: "text/plain;charset=utf-8"} );
+			saveAs( blob, "script.py" );
+        }
+        workspace.addChangeListener(myUpdateFunction);
+            </script>
+    </body>
